@@ -1,6 +1,7 @@
 package: github.com/legnoh/wlw-locate-csv
 import:
 - package: github.com/PuerkitoBio/goquery
+- package: github.com/twpayne/go-kml
 testImport:
 - package: github.com/onsi/ginkgo
 - package: github.com/onsi/gomega

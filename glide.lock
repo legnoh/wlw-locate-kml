@@ -1,15 +1,22 @@
-hash: 5f246335d1cacf272eee03c705fb8d26cdd3a1db56e088d21e67bf43b8eafeb3
-updated: 2017-02-26T23:47:55.550270225+09:00
+hash: 6f4371c5f86e25a0f46bb307b3d8184304942330aa92da3dac856ec74ecc5e76
+updated: 2017-05-02T03:33:18.576105898+09:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/PuerkitoBio/goquery
   version: e1271ee34c6a305e38566ecd27ae374944907ee9
+- name: github.com/twpayne/go-kml
+  version: 06a452a0f5f797508184e9cee89df95bc368ee42
 - name: golang.org/x/net
   version: 10c134ea0df15f7e34d789338c7a2d76cc7a3ab9
   subpackages:
   - html
   - html/atom
+- name: golang.org/x/text
+  version: 470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4
+  subpackages:
+  - transform
+  - unicode/norm
 testImports:
 - name: github.com/onsi/ginkgo
   version: bb93381d543b0e5725244abe752214a110791d01
