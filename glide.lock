@@ -1,14 +1,16 @@
-hash: 6f4371c5f86e25a0f46bb307b3d8184304942330aa92da3dac856ec74ecc5e76
-updated: 2017-05-02T13:41:21.481017786+09:00
+hash: f82388072ed530c39da8f0fd3df580d55537d7e9ac53e773b7aea7981db9e1c0
+updated: 2017-05-02T16:29:02.400464206+09:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/davecgh/go-spew
   version: 346938d642f2ec3594ed81d874461961cd0faa76
-  subpackages:
-  - spew
+- name: github.com/kelseyhightower/envconfig
+  version: b6fde1625d631a48340817849a547164f395d9eb
 - name: github.com/PuerkitoBio/goquery
   version: e1271ee34c6a305e38566ecd27ae374944907ee9
+- name: github.com/scorredoira/email
+  version: 9c97e97eeb958f115130ff8242bcb09346abafdb
 - name: github.com/Sirupsen/logrus
   version: 10f801ebc38b33738c9d17d50860f484a0988ff5
 - name: github.com/twpayne/go-kml

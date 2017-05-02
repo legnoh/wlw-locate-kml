@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestWlwLocateCsv(t *testing.T) {
+func TestWlwLocateKml(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "WlwLocateCsv Suite")
+	RunSpecs(t, "WlwLocateKml Suite")
 }

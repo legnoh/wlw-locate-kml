@@ -9,30 +9,10 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-
 	"golang.org/x/text/unicode/norm"
 
 	"github.com/PuerkitoBio/goquery"
 	kml "github.com/twpayne/go-kml"
-)
-
-var (
-	locationURL  = "https://wonderland-wars.net/location_list.html"
-	hostURL      = "https://wonderland-wars.net"
-	gMapHostHead = "//maps.googleapis.com/maps/api/staticmap?center="
-	gMapHostFoot = regexp.MustCompile("&markers=.*")
-	locations1   = kml.Folder(kml.Name("北海道・東北"))
-	locations2   = kml.Folder(kml.Name("関東"))
-	locations3   = kml.Folder(kml.Name("東海"))
-	locations4   = kml.Folder(kml.Name("北信越"))
-	locations5   = kml.Folder(kml.Name("近畿"))
-	locations6   = kml.Folder(kml.Name("中国・四国"))
-	locations7   = kml.Folder(kml.Name("九州・沖縄"))
-	libStyle     = "#icon-1664-0288D1/ "
-	libSign      = "○"
-	filePath     = "./result.kml"
-	rankResult   = "0pt"
-	rankNull     = "0pt"
 )
 
 // Location は1件の店舗情報をもつ
@@ -48,6 +28,25 @@ type Location struct {
 	Rank5th    string  // ランキング5位の人のpt
 	Library    bool    // WonderlandLIBRARYの有無
 }
+
+var (
+	locationURL  = "https://wonderland-wars.net/location_list.html"
+	hostURL      = "https://wonderland-wars.net"
+	gMapHostHead = "//maps.googleapis.com/maps/api/staticmap?center="
+	gMapHostFoot = regexp.MustCompile("&markers=.*")
+	locations1   = kml.Folder(kml.Name("北海道・東北"))
+	locations2   = kml.Folder(kml.Name("関東"))
+	locations3   = kml.Folder(kml.Name("東海"))
+	locations4   = kml.Folder(kml.Name("北信越"))
+	locations5   = kml.Folder(kml.Name("近畿"))
+	locations6   = kml.Folder(kml.Name("中国・四国"))
+	locations7   = kml.Folder(kml.Name("九州・沖縄"))
+	libStyle     = "#icon-1664-0288D1/ "
+	libSign      = "○"
+	filePath     = "./result-" + strconv.FormatInt(time.Now().Unix(), 10) + ".kml"
+	rankResult   = "0pt"
+	rankNull     = "0pt"
+)
 
 func init() {
 	log.SetOutput(os.Stdout)
@@ -78,8 +77,8 @@ func main() {
 				Long:       0,
 				ShopURL:    "",
 				RankingURL: "",
-				Rank1st:    "0pt",
-				Rank5th:    "0pt",
+				Rank1st:    rankNull,
+				Rank5th:    rankNull,
 				Library:    false,
 			}
 
@@ -112,10 +111,6 @@ func main() {
 			if locationExists {
 				l.ShopURL = shopURL
 
-				//ダミー用
-				l.Long = 0
-				l.Lat = 0
-
 				// ShopURLにアクセスし、ページ内のGoogleMapへのURLから緯度経度を取得してKMLにあうように転置させる
 				// この際、非同期処理での一斉アクセスを避けるため、事前に配列番号秒分のsleepを入れて0.2rps程度になるように留める
 				time.Sleep(2 * time.Second)
@@ -143,14 +138,10 @@ func main() {
 				rankPage, _ := goquery.NewDocument(l.RankingURL)
 				rank1stNode := rankPage.Find(".block_rankig_special > .store_ranking_page")
 				rank5thNode := rankPage.Find(".block_rankig_1st > .store_ranking_page").Eq(3)
-				if rank1stNode.Length() == 0 {
-					l.Rank1st = rankNull
-				} else {
+				if rank1stNode.Length() != 0 {
 					l.Rank1st = rank1stNode.Text()
 				}
-				if rank5thNode.Length() == 0 {
-					l.Rank5th = rankNull
-				} else {
+				if rank5thNode.Length() != 0 {
 					l.Rank5th = rank5thNode.Text()
 				}
 			}
@@ -287,5 +278,5 @@ func main() {
 		log.Error("KML output failed. Finish...")
 	}
 	result.WriteIndent(file, "", "  ")
-	log.Info("KML output successfull. Finish!")
+	log.Info("KML output successfull.")
 }

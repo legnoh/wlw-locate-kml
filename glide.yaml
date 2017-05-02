@@ -1,7 +1,12 @@
-package: github.com/legnoh/wlw-locate-csv
+package: github.com/legnoh/wlw-locate-kml
 import:
+- package: github.com/davecgh/go-spew
+- package: github.com/Sirupsen/logrus
+- package: github.com/kelseyhightower/envconfig
 - package: github.com/PuerkitoBio/goquery
 - package: github.com/twpayne/go-kml
+- package: github.com/scorredoira/email
+- package: golang.org/x/text/unicode/norm
 testImport:
 - package: github.com/onsi/ginkgo
 - package: github.com/onsi/gomega
