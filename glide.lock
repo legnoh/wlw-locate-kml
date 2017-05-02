@@ -1,10 +1,12 @@
 hash: 6f4371c5f86e25a0f46bb307b3d8184304942330aa92da3dac856ec74ecc5e76
-updated: 2017-05-02T03:33:18.576105898+09:00
+updated: 2017-05-02T09:09:27.159123+09:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/PuerkitoBio/goquery
   version: e1271ee34c6a305e38566ecd27ae374944907ee9
+- name: github.com/Sirupsen/logrus
+  version: 10f801ebc38b33738c9d17d50860f484a0988ff5
 - name: github.com/twpayne/go-kml
   version: 06a452a0f5f797508184e9cee89df95bc368ee42
 - name: golang.org/x/net
@@ -12,6 +14,10 @@ imports:
   subpackages:
   - html
   - html/atom
+- name: golang.org/x/sys
+  version: e4594059fe4cde2daf423055a596c2cd1e6c9adf
+  subpackages:
+  - unix
 - name: golang.org/x/text
   version: 470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4
   subpackages:
@@ -51,9 +57,5 @@ testImports:
   - matchers/support/goraph/node
   - matchers/support/goraph/util
   - types
-- name: golang.org/x/sys
-  version: e4594059fe4cde2daf423055a596c2cd1e6c9adf
-  subpackages:
-  - unix
 - name: gopkg.in/yaml.v2
   version: a3f3340b5840cee44f372bddb5880fcbc419b46a

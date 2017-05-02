@@ -1,15 +1,14 @@
 package main
 
 import (
-	//   log "github.com/Sirupsen/logrus"
-
-	"fmt"
 	"image/color"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
 
 	"golang.org/x/text/unicode/norm"
 
@@ -32,6 +31,8 @@ var (
 	libStyle     = "#icon-1664-0288D1/ "
 	libSign      = "○"
 	filePath     = "./result.kml"
+	rankResult   = "0pt"
+	rankNull     = "0pt"
 )
 
 // Location は1件の店舗情報をもつ
@@ -43,7 +44,13 @@ type Location struct {
 	Long       float64 // 緯度
 	ShopURL    string  // 店舗情報URL
 	RankingURL string  // ランキングページURL
+	Rank1st    string  // ランキング1位の人のpt
+	Rank5th    string  // ランキング5位の人のpt
 	Library    bool    // WonderlandLIBRARYの有無
+}
+
+func init() {
+	log.SetOutput(os.Stdout)
 }
 
 func main() {
@@ -52,7 +59,7 @@ func main() {
 	locationPage, _ := goquery.NewDocument(locationURL)
 
 	// 店舗数を取得
-	shopSum := strconv.Itoa(locationPage.Find(".address_box").Length())
+	shopSum := strconv.Itoa(locationPage.Find(".address_box").Length() - 1)
 
 	// 全ての.address_box(店舗情報)に対して、以下の処理を繰り返す
 	locationPage.Find(".address_box").Each(func(i int, s *goquery.Selection) {
@@ -71,6 +78,8 @@ func main() {
 				Long:       0,
 				ShopURL:    "",
 				RankingURL: "",
+				Rank1st:    "0pt",
+				Rank5th:    "0pt",
 				Library:    false,
 			}
 
@@ -127,9 +136,21 @@ func main() {
 
 			// store_rankingのURLを取得して、ホスト名と結合してRankingURLに追加
 			rankPath, storeRankingExists := s.Find(".store_ranking > a").Attr("href")
-
 			if storeRankingExists {
 				l.RankingURL = hostURL + strings.Trim(rankPath, ".")
+
+				// ランキングURLページにもアクセスし、前月/今月ランキングの1位・5位を取得する
+				rankPage, _ := goquery.NewDocument(l.RankingURL)
+				rank1st := rankPage.Find(".block_rankig_special > .store_ranking_page").Text()
+				if rank1st == "" {
+					l.Rank1st = rankNull
+				}
+				l.Rank1st = rank1st
+				rank5th := rankPage.Find(".block_rankig_1st > .store_ranking_page").Eq(3).Text()
+				if rank5th == "" {
+					l.Rank5th = rankNull
+				}
+				l.Rank5th = rank5th
 			}
 
 			// store_ranking配下のicon_terminalが存在する場合、Libraryをtrueに変更
@@ -151,6 +172,13 @@ func main() {
 			}
 			desc += "<br>LIBRARY:" + libSign
 
+			// ランキングも新規店舗の存在があるので多少作る
+			if l.Rank5th == rankNull && l.Rank1st == rankNull {
+				rankResult = "ランキングなし(新店舗?)"
+			} else {
+				rankResult = l.Rank5th + " 〜 " + l.Rank1st
+			}
+
 			// PlaceMarkに全ての情報を結合して保管
 			placemark := kml.Placemark(
 				kml.Name(l.Name),
@@ -162,6 +190,7 @@ func main() {
 						// kml.SimpleData("店舗詳細情報", l.ShopURL),
 						kml.SimpleData("ランキング", l.RankingURL),
 						kml.SimpleData("ライブラリ設置", libSign),
+						kml.SimpleData("ランキング結果(5〜1位)", rankResult),
 					),
 				),
 				kml.Point(kml.Coordinates(kml.Coordinate{Lon: l.Long, Lat: l.Lat})),
@@ -187,7 +216,7 @@ func main() {
 			}
 
 			// カウント
-			fmt.Println(strconv.Itoa(i+1) + " / " + shopSum + "件目完了 - " + l.Name)
+			log.Info(strconv.Itoa(i+1) + "/" + shopSum + " done - " + l.Name)
 		}
 	})
 
@@ -225,9 +254,9 @@ func main() {
 				kml.SimpleField("住所", "string"),
 				// kml.SimpleField("店舗詳細情報", "string"), googleMapのExtendDataのURLエスケープがバグってるのでこちらは出さないようにする
 				kml.SimpleField("ランキング", "string"),
+				kml.SimpleField("ランキング結果(5~1位)", "string"),
 				kml.SimpleField("ライブラリ設置", "string"),
 			),
-
 			locations1,
 			locations2,
 			locations3,
@@ -238,9 +267,11 @@ func main() {
 		),
 	)
 
+	// ファイル書き込み
 	file, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println("file open failed")
+		log.Error("KML output failed. Finish...")
 	}
 	result.WriteIndent(file, "", "  ")
+	log.Info("KML output successfull. Finish!")
 }
