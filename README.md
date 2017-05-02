@@ -6,6 +6,7 @@ output WLW map's KML file.
 
 ## usage
 ```sh
+$ glide install
 $ go run main.go
 ```
 
