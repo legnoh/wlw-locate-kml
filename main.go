@@ -34,6 +34,7 @@ var (
 	hostURL      = "https://wonderland-wars.net"
 	gMapHostHead = "//maps.googleapis.com/maps/api/staticmap?center="
 	gMapHostFoot = regexp.MustCompile("&markers=.*")
+	iconImage    = "http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
 	locations1   = kml.Folder(kml.Name("北海道・東北"))
 	locations2   = kml.Folder(kml.Name("関東"))
 	locations3   = kml.Folder(kml.Name("東海"))
@@ -111,8 +112,8 @@ func main() {
 			if locationExists {
 				l.ShopURL = shopURL
 
-				// ShopURLにアクセスし、ページ内のGoogleMapへのURLから緯度経度を取得してKMLにあうように転置させる
-				// この際、非同期処理での一斉アクセスを避けるため、事前に配列番号秒分のsleepを入れて0.2rps程度になるように留める
+				// ShopURLにアクセスしGoogleMapへのURLから緯度経度を取得する
+				// 一斉アクセスを避けるため、sleepを入れて0.2rps程度になるように留める
 				time.Sleep(2 * time.Second)
 				shopPage, _ := goquery.NewDocument(l.ShopURL)
 				gMapURL, mapExists := shopPage.Find(".access_map").Attr("src")
@@ -154,18 +155,14 @@ func main() {
 				l.Library = false
 			}
 
-			// descとstyleはライブラリで内容に変化が出るので事前に作る
-			desc := "所在地: " + l.Address + "<br>店舗URL: " + l.ShopURL + "<br>ランキング: " + l.RankingURL
+			// ライブラリの有無によってアイコンを変更
 			if l.Library {
-				libSign = "○"
 				libStyle = "#icon-1526-A52714"
 			} else {
-				libSign = "×"
 				libStyle = "#icon-1598-0288D1"
 			}
-			desc += "<br>LIBRARY:" + libSign
 
-			// ランキングも新規店舗の存在があるので多少作る
+			// 新店舗のみ個別のアイコンに変更し、ランキング情報を変更
 			if l.Rank5th == rankNull && l.Rank1st == rankNull {
 				log.Warn("新店舗があるようです！: " + l.Name)
 				rankResult = "ランキングなし"
@@ -177,12 +174,11 @@ func main() {
 			// PlaceMarkに全ての情報を結合して保管
 			placemark := kml.Placemark(
 				kml.Name(l.Name),
-				kml.Description(desc),
+				kml.Description("店舗情報: "+l.ShopURL),
 				kml.ExtendedData(
 					kml.SchemaData(
 						"#extendInfomation",
 						kml.SimpleData("住所", l.Address),
-						// kml.SimpleData("店舗詳細情報", l.ShopURL),
 						kml.SimpleData("ランキング", l.RankingURL),
 						kml.SimpleData("ライブラリ設置", libSign),
 						kml.SimpleData("ランキング結果(5〜1位)", rankResult),
@@ -209,8 +205,6 @@ func main() {
 			case 7:
 				locations7.Add(placemark)
 			}
-
-			// カウント
 			log.Info(strconv.Itoa(i+1) + "/" + shopSum + " done - " + l.Name)
 		}
 	})
@@ -218,15 +212,13 @@ func main() {
 	// フォルダ内のKMLを使って一気にKMLを作成
 	result := kml.KML(
 		kml.Document(
-			kml.Name("WonderlandWars設置店舗"),
-			kml.Description("公式のマップ情報を定期的に取得してプロットしています。<br>作者: @legnoh<br><br>図書館アイコン:ライブラリーあり<br>拠点アイコン:ライブラリーなし"),
 			kml.SharedStyle(
 				"icon-1526-A52714",
 				kml.IconStyle(
 					kml.Color(color.RGBA{R: 105, G: 27, B: 14, A: 0}),
 					kml.Scale(1),
 					kml.Icon(
-						kml.Href("http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"),
+						kml.Href(iconImage),
 					),
 				),
 			),
@@ -236,7 +228,7 @@ func main() {
 					kml.Color(color.RGBA{R: 2, G: 88, B: 209, A: 0}),
 					kml.Scale(1),
 					kml.Icon(
-						kml.Href("http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"),
+						kml.Href(iconImage),
 					),
 				),
 			),
@@ -246,7 +238,7 @@ func main() {
 					kml.Color(color.RGBA{R: 15, G: 157, B: 58, A: 0}),
 					kml.Scale(1),
 					kml.Icon(
-						kml.Href("http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"),
+						kml.Href(iconImage),
 					),
 				),
 			),
@@ -257,7 +249,6 @@ func main() {
 				"extendInfomation",
 				"extendInfomation",
 				kml.SimpleField("住所", "string"),
-				// kml.SimpleField("店舗詳細情報", "string"), googleMapのExtendDataのURLエスケープがバグってるのでこちらは出さないようにする
 				kml.SimpleField("ランキング", "string"),
 				kml.SimpleField("ランキング結果(5~1位)", "string"),
 				kml.SimpleField("ライブラリ設置", "string"),
