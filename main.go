@@ -158,8 +158,10 @@ func main() {
 			// ライブラリの有無によってアイコンを変更
 			if l.Library {
 				libStyle = "#icon-1526-A52714"
+				libSign = "○"
 			} else {
 				libStyle = "#icon-1598-0288D1"
+				libSign = "×"
 			}
 
 			// 新店舗のみ個別のアイコンに変更し、ランキング情報を変更
