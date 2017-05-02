@@ -141,16 +141,18 @@ func main() {
 
 				// ランキングURLページにもアクセスし、前月/今月ランキングの1位・5位を取得する
 				rankPage, _ := goquery.NewDocument(l.RankingURL)
-				rank1st := rankPage.Find(".block_rankig_special > .store_ranking_page").Text()
-				if rank1st == "" {
+				rank1stNode := rankPage.Find(".block_rankig_special > .store_ranking_page")
+				rank5thNode := rankPage.Find(".block_rankig_1st > .store_ranking_page").Eq(3)
+				if rank1stNode.Length() == 0 {
 					l.Rank1st = rankNull
+				} else {
+					l.Rank1st = rank1stNode.Text()
 				}
-				l.Rank1st = rank1st
-				rank5th := rankPage.Find(".block_rankig_1st > .store_ranking_page").Eq(3).Text()
-				if rank5th == "" {
+				if rank5thNode.Length() == 0 {
 					l.Rank5th = rankNull
+				} else {
+					l.Rank5th = rank5thNode.Text()
 				}
-				l.Rank5th = rank5th
 			}
 
 			// store_ranking配下のicon_terminalが存在する場合、Libraryをtrueに変更
@@ -174,7 +176,9 @@ func main() {
 
 			// ランキングも新規店舗の存在があるので多少作る
 			if l.Rank5th == rankNull && l.Rank1st == rankNull {
-				rankResult = "ランキングなし(新店舗?)"
+				log.Warn("新店舗があるようです！: " + l.Name)
+				rankResult = "ランキングなし"
+				libStyle = "#icon-1881-0f9d58"
 			} else {
 				rankResult = l.Rank5th + " 〜 " + l.Rank1st
 			}
@@ -239,6 +243,16 @@ func main() {
 				"icon-1598-0288D1",
 				kml.IconStyle(
 					kml.Color(color.RGBA{R: 2, G: 88, B: 209, A: 0}),
+					kml.Scale(1),
+					kml.Icon(
+						kml.Href("http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"),
+					),
+				),
+			),
+			kml.SharedStyle(
+				"icon-1881-0f9d58",
+				kml.IconStyle(
+					kml.Color(color.RGBA{R: 15, G: 157, B: 58, A: 0}),
 					kml.Scale(1),
 					kml.Icon(
 						kml.Href("http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"),
