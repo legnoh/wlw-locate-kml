@@ -55,6 +55,13 @@ func init() {
 
 func main() {
 
+	// 4〜7時はメンテナンス中なので実行しない
+	hour := time.Now().Hour()
+	if hour == 4 || hour == 5 || hour == 6 {
+		log.Error("現在メンテナンス中なので実行できません。7時以降に再度実行してください。")
+		os.Exit(1)
+	}
+
 	// 店舗情報一覧ページを取得
 	locationPage, _ := goquery.NewDocument(locationURL)
 
