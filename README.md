@@ -10,6 +10,17 @@ $ glide install
 $ go run main.go
 ```
 
+for diff...
+```sh
+$ diff result-before.kml result-after.kml \
+--ignore-matching-lines "SimpleData*" \
+--ignore-matching-lines ".*ランキング結果.*"
+--ignore-matching-lines=".*styleUrl.*" \
+--ignore-matching-lines=".*name.*" \
+--ignore-matching-lines=".*coordinates.*" > ~/Desktop/hoge.diff
+```
+
+
 ## TODO
 - Refactoring
 - UnitTest
