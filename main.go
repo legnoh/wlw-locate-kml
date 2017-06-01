@@ -187,14 +187,14 @@ func main() {
 				kml.ExtendedData(
 					kml.SchemaData(
 						"#extendInfomation",
+						kml.SimpleData("ライブラリ設置", libSign),
 						kml.SimpleData("住所", l.Address),
 						kml.SimpleData("ランキング", l.RankingURL),
-						kml.SimpleData("ライブラリ設置", libSign),
 						kml.SimpleData("ランキング結果(5〜1位)", rankResult),
 					),
 				),
-				kml.Point(kml.Coordinates(kml.Coordinate{Lon: l.Long, Lat: l.Lat})),
 				kml.StyleURL(libStyle),
+				kml.Point(kml.Coordinates(kml.Coordinate{Lon: l.Long, Lat: l.Lat})),
 			)
 
 			// エリア別のフォルダに情報を保管
@@ -257,10 +257,10 @@ func main() {
 			kml.Schema(
 				"extendInfomation",
 				"extendInfomation",
+				kml.SimpleField("ライブラリ設置", "string"),
 				kml.SimpleField("住所", "string"),
 				kml.SimpleField("ランキング", "string"),
 				kml.SimpleField("ランキング結果(5~1位)", "string"),
-				kml.SimpleField("ライブラリ設置", "string"),
 			),
 			locations1,
 			locations2,
