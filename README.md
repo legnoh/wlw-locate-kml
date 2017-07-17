@@ -19,7 +19,7 @@ $ diff result-before.kml result-after.kml \
 --ignore-matching-lines=".*coordinates.*" \
 --ignore-matching-lines ".*ランキング.*" \
 --ignore-matching-lines ".*styleUrl.*" \
--U 1 > ~/result.diff
+-U 1 > frequent.diff
 ```
 
 - ライブラリ設置状況が変わった店舗のみを抜き出す(次回以降対応)
@@ -37,7 +37,7 @@ $ diff result-before.kml result-after.kml \
 --ignore-matching-lines ".*SchemaData>.*" \
 --ignore-matching-lines ".*schemaUrl.*" \
 --ignore-matching-lines ".*name=\"住所\".*" \
--U 4 > ~/Desktop/hoge.diff
+-U 4 > library.diff
 ```
 
 
