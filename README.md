@@ -19,27 +19,8 @@ $ diff result-before.kml result-after.kml \
 --ignore-matching-lines=".*coordinates.*" \
 --ignore-matching-lines ".*ランキング.*" \
 --ignore-matching-lines ".*styleUrl.*" \
--U 1 > frequent.diff
+-U 0 > frequent.diff
 ```
-
-- ライブラリ設置状況が変わった店舗のみを抜き出す(次回以降対応)
-```sh
-$ diff result-before.kml result-after.kml \
---ignore-matching-lines ".*ランキング.*" \
---ignore-matching-lines=".*<name>.*" \
---ignore-matching-lines=".*description.*" \
---ignore-matching-lines=".*coordinates.*" \
---ignore-matching-lines=".*住所.*" \
---ignore-matching-lines=".*styleUrl.*" \
---ignore-matching-lines ".*ExtendedData.*" \
---ignore-matching-lines ".*Placemark>.*" \
---ignore-matching-lines ".*Point>.*" \
---ignore-matching-lines ".*SchemaData>.*" \
---ignore-matching-lines ".*schemaUrl.*" \
---ignore-matching-lines ".*name=\"住所\".*" \
--U 4 > library.diff
-```
-
 
 ## TODO
 - Refactoring
