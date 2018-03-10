@@ -18,40 +18,40 @@ import (
 	kml "github.com/twpayne/go-kml"
 )
 
-// 1地方ごとの店舗情報データ
+// Area 1地方ごとの店舗情報データ
 type Area struct {
 	Name string
 	Pref []Prefacture
 }
 
-// 1県ごとの店舗情報データ
+// Prefacture 1県ごとの店舗情報データ
 type Prefacture struct {
 	Name  string
 	Store []Store
 }
 
-// 1店舗ごとの店舗情報データ
+// Store 1店舗ごとの店舗情報データ
 type Store struct {
-	Id   int
+	ID   int
 	Name string
 	Add  string
 	Lib  bool
 }
 
-// 1ストアのランキング情報
+// StoreScore 1ストアのランキング情報
 type StoreScore struct {
-	Id      int
+	ID      int
 	Ranking []StoreScoreMonthly
 }
 
-// 1ストアの3ヶ月分のランキング情報
+// StoreScoreMonthly 1ストアの3ヶ月分のランキング情報
 type StoreScoreMonthly struct {
 	Name    string
 	Updtime string
 	Data    []Ranker
 }
 
-// ランカー情報
+// Ranker ランカー情報
 type Ranker struct {
 	Rank  int
 	Upd   int
@@ -81,17 +81,9 @@ var (
 	scoreRankingURL = "https://wonder.sega.jp/json/store-ranking-"
 	shopURL         = "https://location.am-all.net/alm/shop?gm=43&sid="
 	rankingURL      = "https://wonder.sega.jp/ranking/store/#!/store:"
-	hostURL         = "https://wonderland-wars.net"
 	gMapHostHead    = "//maps.googleapis.com/maps/api/staticmap?center="
 	gMapHostFoot    = regexp.MustCompile("&markers=.*")
 	iconImage       = "http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
-	locations0      = kml.Folder(kml.Name("北海道・東北"))
-	locations1      = kml.Folder(kml.Name("関東"))
-	locations2      = kml.Folder(kml.Name("東海"))
-	locations3      = kml.Folder(kml.Name("北信越"))
-	locations4      = kml.Folder(kml.Name("近畿"))
-	locations5      = kml.Folder(kml.Name("中国・四国"))
-	locations6      = kml.Folder(kml.Name("九州・沖縄"))
 	long            float64
 	lat             float64
 	libStyle        = "#icon-1664-0288D1/ "
@@ -144,7 +136,7 @@ func main() {
 
 		// 配列に組み替え
 		for x := 0; x < len(storeScoresData); x++ {
-			storeScores[storeScoresData[x].Id] = storeScoresData[x].Ranking[0]
+			storeScores[storeScoresData[x].ID] = storeScoresData[x].Ranking[0]
 		}
 
 		// すべての県に対して以下の処理を繰り返す
@@ -161,7 +153,7 @@ func main() {
 				// ShopURLにアクセスしGoogleMapへのURLから緯度経度を取得する
 				// 一斉アクセスを避けるため、sleepを入れて0.2rps程度になるように留める
 				time.Sleep(1 * time.Second)
-				shopPage, _ := goquery.NewDocument(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].Id))
+				shopPage, _ := goquery.NewDocument(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID))
 				gMapURL, mapExists := shopPage.Find(".access_map").Attr("src")
 				if mapExists {
 
@@ -176,15 +168,15 @@ func main() {
 				}
 
 				// ランキングが空の場合、もしくは5位までない場合はダミーを入れる
-				if storeScores[areas[i].Pref[j].Store[k].Id].Data == nil {
+				if storeScores[areas[i].Pref[j].Store[k].ID].Data == nil {
 					rank1st = 0
 					rank5th = 0
-				} else if len(storeScores[areas[i].Pref[j].Store[k].Id].Data) < 5 {
-					rank1st = storeScores[areas[i].Pref[j].Store[k].Id].Data[0].Score
+				} else if len(storeScores[areas[i].Pref[j].Store[k].ID].Data) < 5 {
+					rank1st = storeScores[areas[i].Pref[j].Store[k].ID].Data[0].Score
 					rank5th = 0
 				} else {
-					rank1st = storeScores[areas[i].Pref[j].Store[k].Id].Data[0].Score
-					rank5th = storeScores[areas[i].Pref[j].Store[k].Id].Data[4].Score
+					rank1st = storeScores[areas[i].Pref[j].Store[k].ID].Data[0].Score
+					rank5th = storeScores[areas[i].Pref[j].Store[k].ID].Data[4].Score
 				}
 
 				// location構造体の定義
@@ -194,8 +186,8 @@ func main() {
 					Area:       i,
 					Lat:        lat,
 					Long:       long,
-					ShopURL:    shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].Id),
-					RankingURL: rankingURL + strconv.Itoa(areas[i].Pref[j].Store[k].Id),
+					ShopURL:    shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID),
+					RankingURL: rankingURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID),
 					Rank1st:    strconv.Itoa(rank1st) + "pt",
 					Rank5th:    strconv.Itoa(rank5th) + "pt",
 					Library:    areas[i].Pref[j].Store[k].Lib,
