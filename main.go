@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"image/color"
 	"io/ioutil"
 	"net/http"
@@ -19,24 +18,48 @@ import (
 	kml "github.com/twpayne/go-kml"
 )
 
-// 1地方ごとのデータ
-type Region struct {
+// 1地方ごとの店舗情報データ
+type Area struct {
 	Name string
 	Pref []Prefacture
 }
 
-// 1県ごとのデータ
+// 1県ごとの店舗情報データ
 type Prefacture struct {
 	Name  string
 	Store []Store
 }
 
-// 1店舗のデータ
+// 1店舗ごとの店舗情報データ
 type Store struct {
 	Id   int
 	Name string
 	Add  string
-	Lib  string
+	Lib  bool
+}
+
+// 1ストアのランキング情報
+type StoreScore struct {
+	Id      int
+	Ranking []StoreScoreMonthly
+}
+
+// 1ストアの3ヶ月分のランキング情報
+type StoreScoreMonthly struct {
+	Name    string
+	Updtime string
+	Data    []Ranker
+}
+
+// ランカー情報
+type Ranker struct {
+	Rank  int
+	Upd   int
+	Name  string
+	Cast  string
+	Honor string
+	Opera string
+	Score int
 }
 
 // 1件の店舗情報に諸情報を加えた完成形データ
@@ -54,23 +77,30 @@ type Location struct {
 }
 
 var (
-	locationURL  = "http://wonder.sega.jp/store/store-list.json"
-	hostURL      = "https://wonderland-wars.net"
-	gMapHostHead = "//maps.googleapis.com/maps/api/staticmap?center="
-	gMapHostFoot = regexp.MustCompile("&markers=.*")
-	iconImage    = "http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
-	locations1   = kml.Folder(kml.Name("北海道・東北"))
-	locations2   = kml.Folder(kml.Name("関東"))
-	locations3   = kml.Folder(kml.Name("東海"))
-	locations4   = kml.Folder(kml.Name("北信越"))
-	locations5   = kml.Folder(kml.Name("近畿"))
-	locations6   = kml.Folder(kml.Name("中国・四国"))
-	locations7   = kml.Folder(kml.Name("九州・沖縄"))
-	libStyle     = "#icon-1664-0288D1/ "
-	libSign      = "○"
-	filePath     = "./result-" + strconv.FormatInt(time.Now().Unix(), 10) + ".kml"
-	rankResult   = "0pt"
-	rankNull     = "0pt"
+	locationURL     = "https://wonder.sega.jp/json/store-list.json"
+	scoreRankingURL = "https://wonder.sega.jp/json/store-ranking-"
+	shopURL         = "https://location.am-all.net/alm/shop?gm=43&sid="
+	rankingURL      = "https://wonder.sega.jp/ranking/store/#!/store:"
+	hostURL         = "https://wonderland-wars.net"
+	gMapHostHead    = "//maps.googleapis.com/maps/api/staticmap?center="
+	gMapHostFoot    = regexp.MustCompile("&markers=.*")
+	iconImage       = "http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
+	locations0      = kml.Folder(kml.Name("北海道・東北"))
+	locations1      = kml.Folder(kml.Name("関東"))
+	locations2      = kml.Folder(kml.Name("東海"))
+	locations3      = kml.Folder(kml.Name("北信越"))
+	locations4      = kml.Folder(kml.Name("近畿"))
+	locations5      = kml.Folder(kml.Name("中国・四国"))
+	locations6      = kml.Folder(kml.Name("九州・沖縄"))
+	long            float64
+	lat             float64
+	libStyle        = "#icon-1664-0288D1/ "
+	libSign         = "○"
+	filePath        = "./result-" + strconv.FormatInt(time.Now().Unix(), 10) + ".kml"
+	rankResult      = "0pt"
+	rankNull        = "0pt"
+	rank1st         = 0
+	rank5th         = 0
 )
 
 func init() {
@@ -87,73 +117,51 @@ func main() {
 	}
 
 	// 店舗情報一覧を取得して構造体に分解
-	locationPage, _ := goquery.NewDocument(locationURL)
 	resp, _ := http.Get(locationURL)
 	defer resp.Body.Close()
 	jsonBlob, _ := ioutil.ReadAll(resp.Body)
-	var regions []Region
-	json.Unmarshal(jsonBlob, &regions)
+	var areas []Area
+	json.Unmarshal(jsonBlob, &areas)
 
-	fmt.Printf("%+v", regions)
+	// ストア情報を保持する配列を定義
+	locations := make(map[int]*kml.CompoundElement)
 
-	// 店舗数を取得
-	shopSum := strconv.Itoa(locationPage.Find(".address_box").Length() - 1)
+	// すべてのAreaに対して以下の処理を行う
+	for i := 0; i < len(areas); i++ {
 
-	// 全ての.address_box(店舗情報)に対して、以下の処理を繰り返す
-	locationPage.Find(".address_box").Each(func(i int, s *goquery.Selection) {
+		// エリア名とKML指定
+		log.Info("# " + areas[i].Name)
+		locations[i] = kml.Folder(kml.Name(areas[i].Name))
 
-		// pref=99の場合、NO DATAなので処理を飛ばす
-		prefs, _ := s.Attr("pref")
-		pref, _ := strconv.Atoi(prefs)
-		if pref != 99 {
+		// ランキング情報を取得する
+		resp, _ := http.Get(scoreRankingURL + strconv.Itoa(i) + ".json")
+		defer resp.Body.Close()
+		jsonBlob, _ := ioutil.ReadAll(resp.Body)
+		var storeScoresData []StoreScore
+		json.Unmarshal(jsonBlob, &storeScoresData)
 
-			// location構造体の定義
-			l := Location{
-				Name:       "",
-				Address:    "",
-				Area:       0,
-				Lat:        0,
-				Long:       0,
-				ShopURL:    "",
-				RankingURL: "",
-				Rank1st:    rankNull,
-				Rank5th:    rankNull,
-				Library:    false,
-			}
+		storeScores := make(map[int]StoreScoreMonthly)
 
-			// location_nameを取得して、Nameに追加(気持ち悪いので全半角の正規化を行う)
-			l.Name = string(norm.NFKC.Bytes([]byte(s.Find(".location_name > a").Text())))
+		// 配列に組み替え
+		for x := 0; x < len(storeScoresData); x++ {
+			storeScores[storeScoresData[x].Id] = storeScoresData[x].Ranking[0]
+		}
 
-			// addressを取得して、Addressに追加(気持ち悪いので全半角の正規化を行う)
-			l.Address = string(norm.NFKC.Bytes([]byte(s.Find(".address").Text())))
+		// すべての県に対して以下の処理を繰り返す
+		for j := 0; j < len(areas[i].Pref); j++ {
 
-			// ページ分類ごとにエリア区分を区分け
-			switch pref {
-			case 40, 2, 6, 3, 42, 44, 39:
-				l.Area = 1
-			case 18, 28, 5, 20, 25, 26, 14, 46:
-				l.Area = 2
-			case 23, 1, 15, 41:
-				l.Area = 3
-			case 34, 32, 30, 4, 37:
-				l.Area = 4
-			case 22, 16, 33, 9, 47, 35:
-				l.Area = 5
-			case 29, 10, 36, 24, 45, 27, 12, 7, 19:
-				l.Area = 6
-			case 38, 8, 21, 31, 43, 17, 13, 11:
-				l.Area = 7
-			}
+			log.Info("## " + areas[i].Pref[j].Name)
 
-			// location_nameのURLを取得して、ShopURLに追加
-			shopURL, locationExists := s.Find(".location_name > a").Attr("href")
-			if locationExists {
-				l.ShopURL = shopURL
+			// すべての店舗に対して以下の処理を繰り返す
+			for k := 0; k < len(areas[i].Pref[j].Store); k++ {
 
+				log.Info("- " + areas[i].Pref[j].Store[k].Name)
+
+				// 店舗IDから位置情報取得
 				// ShopURLにアクセスしGoogleMapへのURLから緯度経度を取得する
 				// 一斉アクセスを避けるため、sleepを入れて0.2rps程度になるように留める
-				time.Sleep(2 * time.Second)
-				shopPage, _ := goquery.NewDocument(l.ShopURL)
+				time.Sleep(1 * time.Second)
+				shopPage, _ := goquery.NewDocument(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].Id))
 				gMapURL, mapExists := shopPage.Find(".access_map").Attr("src")
 				if mapExists {
 
@@ -163,91 +171,74 @@ func main() {
 
 					// KMLに投入するため、逆転させてfloat64に変換させる
 					longLat := strings.Split(gMapURL, ",")
-					l.Long, _ = strconv.ParseFloat(longLat[1], 64)
-					l.Lat, _ = strconv.ParseFloat(longLat[0], 64)
+					long, _ = strconv.ParseFloat(longLat[1], 64)
+					lat, _ = strconv.ParseFloat(longLat[0], 64)
 				}
-			}
 
-			// store_rankingのURLを取得して、ホスト名と結合してRankingURLに追加
-			rankPath, storeRankingExists := s.Find(".store_ranking > a").Attr("href")
-			if storeRankingExists {
-				l.RankingURL = hostURL + strings.Trim(rankPath, ".")
-
-				// ランキングURLページにもアクセスし、前月/今月ランキングの1位・5位を取得する
-				rankPage, _ := goquery.NewDocument(l.RankingURL)
-				rank1stNode := rankPage.Find(".block_rankig_special > .store_ranking_page")
-				rank5thNode := rankPage.Find(".block_rankig_1st > .store_ranking_page").Eq(3)
-				if rank1stNode.Length() != 0 {
-					l.Rank1st = rank1stNode.Text()
+				// ランキングが空の場合、もしくは5位までない場合はダミーを入れる
+				if storeScores[areas[i].Pref[j].Store[k].Id].Data == nil {
+					rank1st = 0
+					rank5th = 0
+				} else if len(storeScores[areas[i].Pref[j].Store[k].Id].Data) < 5 {
+					rank1st = storeScores[areas[i].Pref[j].Store[k].Id].Data[0].Score
+					rank5th = 0
+				} else {
+					rank1st = storeScores[areas[i].Pref[j].Store[k].Id].Data[0].Score
+					rank5th = storeScores[areas[i].Pref[j].Store[k].Id].Data[4].Score
 				}
-				if rank5thNode.Length() != 0 {
-					l.Rank5th = rank5thNode.Text()
+
+				// location構造体の定義
+				l := Location{
+					Name:       string(norm.NFKC.Bytes([]byte(areas[i].Pref[j].Store[k].Name))),
+					Address:    string(norm.NFKC.Bytes([]byte(areas[i].Pref[j].Store[k].Add))),
+					Area:       i,
+					Lat:        lat,
+					Long:       long,
+					ShopURL:    shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].Id),
+					RankingURL: rankingURL + strconv.Itoa(areas[i].Pref[j].Store[k].Id),
+					Rank1st:    strconv.Itoa(rank1st) + "pt",
+					Rank5th:    strconv.Itoa(rank5th) + "pt",
+					Library:    areas[i].Pref[j].Store[k].Lib,
 				}
-			}
 
-			// store_ranking配下のicon_terminalが存在する場合、Libraryをtrueに変更
-			_, libraryExists := s.Find(".store_ranking > .icon_terminal > img").Attr("src")
-			if libraryExists {
-				l.Library = true
-			} else {
-				l.Library = false
-			}
+				// ライブラリの有無によってアイコンを変更
+				if l.Library {
+					libStyle = "#icon-1526-A52714"
+					libSign = "○"
+				} else {
+					libStyle = "#icon-1598-0288D1"
+					libSign = "×"
+				}
 
-			// ライブラリの有無によってアイコンを変更
-			if l.Library {
-				libStyle = "#icon-1526-A52714"
-				libSign = "○"
-			} else {
-				libStyle = "#icon-1598-0288D1"
-				libSign = "×"
-			}
+				// 新店舗のみ個別のアイコンに変更し、ランキング情報を変更
+				if l.Rank5th == rankNull && l.Rank1st == rankNull {
+					log.Warn("新店舗があるようです！: " + l.Name)
+					rankResult = "ランキングなし"
+					libStyle = "#icon-1881-0f9d58"
+				} else {
+					rankResult = l.Rank5th + " 〜 " + l.Rank1st
+				}
 
-			// 新店舗のみ個別のアイコンに変更し、ランキング情報を変更
-			if l.Rank5th == rankNull && l.Rank1st == rankNull {
-				log.Warn("新店舗があるようです！: " + l.Name)
-				rankResult = "ランキングなし"
-				libStyle = "#icon-1881-0f9d58"
-			} else {
-				rankResult = l.Rank5th + " 〜 " + l.Rank1st
-			}
-
-			// PlaceMarkに全ての情報を結合して保管
-			placemark := kml.Placemark(
-				kml.Name(l.Name),
-				kml.Description("店舗情報: "+l.ShopURL),
-				kml.ExtendedData(
-					kml.SchemaData(
-						"#extendInfomation",
-						kml.SimpleData("ライブラリ設置", libSign),
-						kml.SimpleData("住所", l.Address),
-						kml.SimpleData("ランキング", l.RankingURL),
-						kml.SimpleData("ランキング結果(5〜1位)", rankResult),
+				// PlaceMarkに全ての情報を結合して配列にKMLに追加
+				placemark := kml.Placemark(
+					kml.Name(l.Name),
+					kml.Description("店舗情報: "+l.ShopURL),
+					kml.ExtendedData(
+						kml.SchemaData(
+							"#extendInfomation",
+							kml.SimpleData("ライブラリ設置", libSign),
+							kml.SimpleData("住所", l.Address),
+							kml.SimpleData("ランキング", l.RankingURL),
+							kml.SimpleData("ランキング結果(5〜1位)", rankResult),
+						),
 					),
-				),
-				kml.StyleURL(libStyle),
-				kml.Point(kml.Coordinates(kml.Coordinate{Lon: l.Long, Lat: l.Lat})),
-			)
-
-			// エリア別のフォルダに情報を保管
-			switch l.Area {
-			case 1:
-				locations1.Add(placemark)
-			case 2:
-				locations2.Add(placemark)
-			case 3:
-				locations3.Add(placemark)
-			case 4:
-				locations4.Add(placemark)
-			case 5:
-				locations5.Add(placemark)
-			case 6:
-				locations6.Add(placemark)
-			case 7:
-				locations7.Add(placemark)
+					kml.StyleURL(libStyle),
+					kml.Point(kml.Coordinates(kml.Coordinate{Lon: l.Long, Lat: l.Lat})),
+				)
+				locations[i].Add(placemark)
 			}
-			log.Info(strconv.Itoa(i+1) + "/" + shopSum + " done - " + l.Name)
 		}
-	})
+	}
 
 	// フォルダ内のKMLを使って一気にKMLを作成
 	result := kml.KML(
@@ -293,13 +284,13 @@ func main() {
 				kml.SimpleField("ランキング", "string"),
 				kml.SimpleField("ランキング結果(5~1位)", "string"),
 			),
-			locations1,
-			locations2,
-			locations3,
-			locations4,
-			locations5,
-			locations6,
-			locations7,
+			locations[0],
+			locations[1],
+			locations[2],
+			locations[3],
+			locations[4],
+			locations[5],
+			locations[6],
 		),
 	)
 
