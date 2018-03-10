@@ -1,7 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"image/color"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -15,7 +19,27 @@ import (
 	kml "github.com/twpayne/go-kml"
 )
 
-// Location は1件の店舗情報をもつ
+// 1地方ごとのデータ
+type Region struct {
+	Name string
+	Pref []Prefacture
+}
+
+// 1県ごとのデータ
+type Prefacture struct {
+	Name  string
+	Store []Store
+}
+
+// 1店舗のデータ
+type Store struct {
+	Id   int
+	Name string
+	Add  string
+	Lib  string
+}
+
+// 1件の店舗情報に諸情報を加えた完成形データ
 type Location struct {
 	Name       string  // 店舗名
 	Address    string  // 住所
@@ -30,7 +54,7 @@ type Location struct {
 }
 
 var (
-	locationURL  = "https://wonderland-wars.net/location_list.html"
+	locationURL  = "http://wonder.sega.jp/store/store-list.json"
 	hostURL      = "https://wonderland-wars.net"
 	gMapHostHead = "//maps.googleapis.com/maps/api/staticmap?center="
 	gMapHostFoot = regexp.MustCompile("&markers=.*")
@@ -62,8 +86,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 店舗情報一覧ページを取得
+	// 店舗情報一覧を取得して構造体に分解
 	locationPage, _ := goquery.NewDocument(locationURL)
+	resp, _ := http.Get(locationURL)
+	defer resp.Body.Close()
+	jsonBlob, _ := ioutil.ReadAll(resp.Body)
+	var regions []Region
+	json.Unmarshal(jsonBlob, &regions)
+
+	fmt.Printf("%+v", regions)
 
 	// 店舗数を取得
 	shopSum := strconv.Itoa(locationPage.Find(".address_box").Length() - 1)
