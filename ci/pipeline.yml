@@ -7,7 +7,7 @@ resources:
   - name: month1st-7am
     type: cron-resource
     source:
-      expression: "0 7 1 * *"
+      expression: "10 7 1 * *"
       location: Asia/Tokyo
       fire_immediately: true
   - name: release
@@ -16,6 +16,7 @@ resources:
       owner: concourse
       repository: concourse
       access_token: ((github-access-token))
+      pre_release: true
   - name: slack
     type: slack-post-resource
     source:
@@ -37,6 +38,8 @@ jobs:
         source: {repository: circleci/golang}
       inputs:
         - name: repo
+      caches:
+        - path: repo/vendor
       outputs:
         - name: out
       run:
@@ -50,10 +53,14 @@ jobs:
       - out/result-*.tgz
       predefined_acl: publicRead
       content_type: application/octet-stream
-  - put: slack
-    params:
-      message_file: out/slack
-
+    on_success:
+      put: slack
+      params:
+        message:
+          text: |
+            @legnoh wlw-locate-kml is updated:tea:
+            https://github.com/legnoh/wlw-locate-kml/releases
+            http://$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
 resource_types:
 - name: cron-resource

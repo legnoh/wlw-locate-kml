@@ -1,19 +1,23 @@
 #!/bin/bash
 
 set -e -u -x
+shopt -s dotglob
 
 # prepare
+INPUT_REPO=$PWD/repo
+GOPATH_REPO=$GOPATH/src/github.com/legnoh/wlw-locate-kml
 mkdir -p $GOPATH/src/github.com/legnoh
-cp -r repo $GOPATH/src/github.com/legnoh/wlw-locate-kml
-cd $GOPATH/src/github.com/legnoh/wlw-locate-kml
+mv $INPUT_REPO $GOPATH_REPO
+cd $GOPATH_REPO
 dep ensure
 
 # run
 go run main.go
 
 # output
-cd -
-cp $GOPATH/src/github.com/legnoh/wlw-locate-kml/result-*.kml out/
+cd ..
+cp $GOPATH_REPO $INPUT_REPO
+cp $INPUT_REPO/result-*.kml out/
 
 
 # make release info
@@ -33,5 +37,3 @@ diff result-`date -d '-1 month' +%Y%m01`.kml result-`date +%Y%m%d`.kml \
 echo "# 新規出店・退店\n\n\`\`\`diff\n" > out/body
 cat out/diff >> out/body
 echo "\`\`\`" >> out/body
-
-echo "@legnoh wlw-locate-kml is updated:tea:\nhttps://github.com/legnoh/wlw-locate-kml/releases" > out/slack
