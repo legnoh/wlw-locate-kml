@@ -5,12 +5,11 @@ resources:
     source:
       uri: https://github.com/concourse/git-resource.git
   - name: month1st-7am
-    type: time
+    type: cron-resource
     source:
-      start: 7:00 AM
-      stop: 8:00 AM
-      interval: 1h
+      expression: "0 7 1 * *"
       location: Asia/Tokyo
+      fire_immediately: true
 
   - name: release
     type: github-release
@@ -47,3 +46,9 @@ jobs:
       - out/result-*.tgz
       predefined_acl: publicRead
       content_type: application/octet-stream
+
+resource_types:
+- name: cron-resource
+  type: docker-image
+  source:
+    repository: cftoolsmiths/cron-resource
