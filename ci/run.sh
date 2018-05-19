@@ -34,4 +34,4 @@ echo "# 新規出店・退店\n\n\`\`\`diff\n" > out/body
 cat out/diff >> out/body
 echo "\`\`\`" >> out/body
 
-echo "@legnoh wlw-locate-kml is updated.\nhttps://github.com/legnoh/wlw-locate-kml/releases" > out/slack
+echo "@legnoh wlw-locate-kml is updated:tea:\nhttps://github.com/legnoh/wlw-locate-kml/releases" > out/slack
