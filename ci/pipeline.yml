@@ -1,0 +1,73 @@
+---
+resources:
+  - name: repo
+    type: git
+    source:
+      uri: https://github.com/concourse/git-resource.git
+  - name: month1st-7am
+    type: cron-resource
+    source:
+      expression: "10 7 1 * *"
+      location: Asia/Tokyo
+      fire_immediately: true
+  - name: release
+    type: github-release
+    source:
+      owner: concourse
+      repository: concourse
+      access_token: ((github-access-token))
+      pre_release: true
+  - name: slack
+    type: slack-post-resource
+    source:
+      token: ((slack-token))
+      channel_id: ((slack-channel-id))
+
+jobs:
+- name: make-kml
+  public: true
+  plan:
+  - get: repo
+  - get: month1st-7am
+    trigger: true
+  - task: make-kml
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: circleci/golang}
+      inputs:
+        - name: repo
+      caches:
+        - path: repo/vendor
+      outputs:
+        - name: out
+      run:
+        path: repo/ci/run.sh
+  - put: release
+    params:
+      name: out/name
+      tag: out/tag
+      body: out/body
+      globs:
+      - out/result-*.tgz
+      predefined_acl: publicRead
+      content_type: application/octet-stream
+    on_success:
+      put: slack
+      params:
+        message:
+          text: |
+            @legnoh wlw-locate-kml is updated:tea:
+            https://github.com/legnoh/wlw-locate-kml/releases
+            http://$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+resource_types:
+- name: cron-resource
+  type: docker-image
+  source:
+    repository: cftoolsmiths/cron-resource
+- name: slack-post-resource
+  type: docker-image
+  source:
+    repository: jakobleben/slack-post-resource
