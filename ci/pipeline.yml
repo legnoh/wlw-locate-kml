@@ -1,0 +1,25 @@
+---
+resources:
+  - name: repo
+    type: git
+    source:
+      uri: https://github.com/concourse/git-resource.git
+  - name: release
+    type: github-release
+    source:
+      owner: concourse
+      repository: concourse
+      access_token: ((access-token))
+
+jobs:
+- name: make-kml
+  public: true
+  plan:
+  - get: repo
+  - task: make-kml
+    file: repo/ci/run.yml
+  - put: release
+    params:
+      file: out/result-*.kml
+      predefined_acl: publicRead
+      content_type: application/octet-stream
