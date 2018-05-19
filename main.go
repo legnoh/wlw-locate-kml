@@ -88,7 +88,7 @@ var (
 	lat             float64
 	libStyle        = "#icon-1664-0288D1/ "
 	libSign         = "○"
-	filePath        = "./result-" + strconv.FormatInt(time.Now().Unix(), 10) + ".kml"
+	filePath        = "./result-" + time.Now().Format("20060102") + ".kml"
 	rankResult      = "0pt"
 	rankNull        = "0pt"
 	rank1st         = 0
@@ -152,7 +152,7 @@ func main() {
 				// 店舗IDから位置情報取得
 				// ShopURLにアクセスしGoogleMapへのURLから緯度経度を取得する
 				// 一斉アクセスを避けるため、sleepを入れて0.2rps程度になるように留める
-				time.Sleep(1 * time.Second)
+				time.Sleep(200 * time.Millisecond)
 				shopPage, _ := goquery.NewDocument(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID))
 				gMapURL, mapExists := shopPage.Find(".access_map").Attr("src")
 				if mapExists {

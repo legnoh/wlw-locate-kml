@@ -4,6 +4,14 @@ resources:
     type: git
     source:
       uri: https://github.com/concourse/git-resource.git
+  - name: month1st-7am
+    type: time
+    source:
+      start: 7:00 AM
+      stop: 8:00 AM
+      interval: 1h
+      location: Asia/Tokyo
+
   - name: release
     type: github-release
     source:
@@ -16,10 +24,26 @@ jobs:
   public: true
   plan:
   - get: repo
+  - get: month1st-7am
+    trigger: true
   - task: make-kml
-    file: repo/ci/run.yml
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: circleci/golang}
+      inputs:
+        - name: repo
+      outputs:
+        - name: out
+      run:
+        path: repo/ci/run.sh
   - put: release
     params:
-      file: out/result-*.kml
+      name: out/name
+      tag: out/tag
+      body: out/body
+      globs:
+      - out/result-*.tgz
       predefined_acl: publicRead
       content_type: application/octet-stream
