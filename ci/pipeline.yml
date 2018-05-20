@@ -16,7 +16,7 @@ resources:
       owner: legnoh
       repository: wlw-locate-kml
       access_token: ((github-access-token))
-      pre_release: true
+      pre_release: "true"
   - name: slack
     type: slack-notification
     source:
