@@ -3,7 +3,7 @@ resources:
   - name: repo
     type: git
     source:
-      uri: https://github.com/concourse/git-resource.git
+      uri: https://github.com/legnoh/wlw-locate-kml.git
   - name: month1st-7am
     type: cron-resource
     source:
