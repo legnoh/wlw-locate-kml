@@ -151,8 +151,8 @@ func main() {
 
 				// 店舗IDから位置情報取得
 				// ShopURLにアクセスしGoogleMapへのURLから緯度経度を取得する
-				// 一斉アクセスを避けるため、sleepを入れて0.2rps程度になるように留める
-				time.Sleep(200 * time.Millisecond)
+				// 一斉アクセスを避けるため、sleepを入れて多少マイルドになるように止める
+				time.Sleep(10 * time.Millisecond)
 				shopPage, _ := goquery.NewDocument(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID))
 				gMapURL, mapExists := shopPage.Find(".access_map").Attr("src")
 				if mapExists {
