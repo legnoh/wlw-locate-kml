@@ -35,7 +35,7 @@ jobs:
       platform: linux
       image_resource:
         type: docker-image
-        source: {repository: circleci/golang}
+        source: {repository: shadmanx/golang-dep}
       inputs:
         - name: repo
       outputs:
