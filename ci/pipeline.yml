@@ -58,7 +58,7 @@ jobs:
     put: slack
     params:
       text: |
-        wlw-locate-kml is updated:tea:
+        新しいKMLができたよ!:christmas_tree:
         https://github.com/legnoh/wlw-locate-kml/releases
         ((atc-url))/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
@@ -66,7 +66,7 @@ jobs:
     put: slack
     params:
       text: |
-        wlw-locate-kml job failed:fire::fire:
+        KML作りに失敗したんだよ...:fire::fire:
         ((atc-url))/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
 resource_types:
