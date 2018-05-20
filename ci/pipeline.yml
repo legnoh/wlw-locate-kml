@@ -35,8 +35,8 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: shadmanx/golang-dep
-          tag: latest
+          repository: golang
+          tag: alpine
       inputs:
         - name: repo
       outputs:
