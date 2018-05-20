@@ -1,14 +1,13 @@
 #!/bin/bash
 
 set -e -u -x
-shopt -s dotglob
 
 # prepare
 JOB_DIR=$PWD
 INPUT_REPO=$JOB_DIR/repo
 GOPATH_REPO=$GOPATH/src/github.com/legnoh/wlw-locate-kml
 mkdir -p $GOPATH/src/github.com/legnoh
-cp -r $INPUT_REPO $GOPATH_REPO
+cp -ar $INPUT_REPO $GOPATH_REPO
 cd $GOPATH_REPO
 dep ensure
 
@@ -17,7 +16,7 @@ go run main.go
 
 # output
 cd $JOB_DIR
-cp -r $GOPATH_REPO/result-*.kml out/
+cp $GOPATH_REPO/result-*.kml out/
 
 
 # make release info
