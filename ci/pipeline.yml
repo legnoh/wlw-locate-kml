@@ -13,8 +13,8 @@ resources:
   - name: release
     type: github-release
     source:
-      owner: concourse
-      repository: concourse
+      owner: legnoh
+      repository: wlw-locate-kml
       access_token: ((github-access-token))
       pre_release: true
   - name: slack
