@@ -38,8 +38,6 @@ jobs:
         source: {repository: circleci/golang}
       inputs:
         - name: repo
-      caches:
-        - path: repo/vendor
       outputs:
         - name: out
       run:
@@ -50,7 +48,7 @@ jobs:
       tag: out/tag
       body: out/body
       globs:
-      - out/result-*.tgz
+      - out/result-*.kml
       predefined_acl: publicRead
       content_type: application/octet-stream
     on_success:
