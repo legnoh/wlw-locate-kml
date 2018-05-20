@@ -18,10 +18,9 @@ resources:
       access_token: ((github-access-token))
       pre_release: true
   - name: slack
-    type: slack-post-resource
+    type: slack-notification
     source:
-      token: ((slack-token))
-      channel_id: ((slack-channel-id))
+      url: ((slack-url))
 
 jobs:
 - name: make-kml
@@ -55,26 +54,24 @@ jobs:
   on_success:
     put: slack
     params:
-      message:
-        text: |
-          @legnoh wlw-locate-kml is updated:tea:
-          https://github.com/legnoh/wlw-locate-kml/releases
-          http://$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+      text: |
+        @legnoh wlw-locate-kml is updated:tea:
+        https://github.com/legnoh/wlw-locate-kml/releases
+        http://$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
   on_failure:
     put: slack
     params:
-      message:
-        text: |
-          @legnoh wlw-locate-kml failed:bomb:
-          http://$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+      text: |
+        @legnoh wlw-locate-kml failed:bomb:
+        http://$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
 resource_types:
 - name: cron-resource
   type: docker-image
   source:
     repository: cftoolsmiths/cron-resource
-- name: slack-post-resource
+- name: slack-notification
   type: docker-image
   source:
-    repository: jakobleben/slack-post-resource
+    repository: cfcommunity/slack-notification-resource

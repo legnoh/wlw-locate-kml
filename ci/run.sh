@@ -26,7 +26,7 @@ date +%Y%m%d > out/tag
 
 wget https://github.com/legnoh/wlw-locate-kml/releases/download/`date -d '-1 month' +%Y%m01`/result-`date -d '-1 month' +%Y%m01`.kml
 
-diff result-`date -d '-1 month' +%Y%m01`.kml result-`date +%Y%m%d`.kml \
+diff result-`date -d '-1 month' +%Y%m01`.kml out/result-`date +%Y%m%d`.kml \
 --ignore-matching-lines=".*name.*" \
 --ignore-matching-lines=".*description.*" \
 --ignore-matching-lines=".*coordinates.*" \
