@@ -9,7 +9,6 @@ resources:
     source:
       expression: "10 7 1 * *"
       location: Asia/Tokyo
-      fire_immediately: true
   - name: release
     type: github-release
     source:
