@@ -25,6 +25,7 @@ resources:
 jobs:
 - name: make-kml
   public: true
+  build_logs_to_retain: 12
   plan:
   - get: repo
   - get: month1st-7am
