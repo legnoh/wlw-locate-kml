@@ -17,7 +17,7 @@ go run main.go
 
 # output
 cd $JOB_DIR
-cp -r $INPUT_REPO/result-*.kml out/
+cp -r $GOPATH_REPO/result-*.kml out/
 
 
 # make release info
