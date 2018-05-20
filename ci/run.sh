@@ -38,6 +38,7 @@ diff result-`date -d '-1 month' +%Y%m01`.kml out/result-`date +%Y%m%d`.kml \
 set -e
 
 touch out/body
-echo "# 新規出店・退店\n\n\`\`\`diff\n" >> out/body
+echo "# 新規出店・退店" >> out/body
+echo '```diff' >> out/body
 cat out/diff >> out/body
-echo "\`\`\`" >> out/body
+echo '```' >> out/body
