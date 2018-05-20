@@ -17,7 +17,7 @@ go run main.go
 
 # output
 cd $JOB_DIR
-cp -r $GOPATH_REPO/vendor $INPUT_REPO/vendor
+cp -r $GOPATH_REPO/vendor $INPUT_REPO/
 cp -r $INPUT_REPO/result-*.kml out/
 
 
