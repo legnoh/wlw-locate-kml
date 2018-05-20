@@ -26,6 +26,7 @@ date +%Y%m%d > out/tag
 
 wget https://github.com/legnoh/wlw-locate-kml/releases/download/`date -d '-1 month' +%Y%m01`/result-`date -d '-1 month' +%Y%m01`.kml
 
+set +e
 touch out/diff
 diff result-`date -d '-1 month' +%Y%m01`.kml out/result-`date +%Y%m%d`.kml \
 --ignore-matching-lines=".*name.*" \
@@ -34,6 +35,7 @@ diff result-`date -d '-1 month' +%Y%m01`.kml out/result-`date +%Y%m%d`.kml \
 --ignore-matching-lines ".*ランキング.*" \
 --ignore-matching-lines ".*styleUrl.*" \
 -U 0 >> out/diff
+set -e
 
 touch out/body
 echo "# 新規出店・退店\n\n\`\`\`diff\n" >> out/body
