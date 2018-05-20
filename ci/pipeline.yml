@@ -42,6 +42,8 @@ jobs:
         - name: out
       run:
         path: repo/ci/run.sh
+      params:
+        TZ: 'Asia/Tokyo'
   - put: release
     params:
       name: out/name
@@ -57,14 +59,14 @@ jobs:
       text: |
         @legnoh wlw-locate-kml is updated:tea:
         https://github.com/legnoh/wlw-locate-kml/releases
-        $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+        ((atc-url))/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
   on_failure:
     put: slack
     params:
       text: |
         @legnoh wlw-locate-kml failed:bomb:
-        $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+        ((atc-url))/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
 resource_types:
 - name: cron-resource
