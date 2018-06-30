@@ -29,10 +29,12 @@ wget https://github.com/legnoh/wlw-locate-kml/releases/download/`date -d '-1 mon
 set +e
 touch out/diff
 diff result-`date -d '-1 month' +%Y%m01`.kml out/result-`date +%Y%m%d`.kml \
---ignore-matching-lines=".*name.*" \
 --ignore-matching-lines=".*description.*" \
+--ignore-matching-lines=".*name=\"住所\".*" \
+--ignore-matching-lines ".*name=\"ランキング\"" \
+--ignore-matching-lines ".*name=\"ランキング結果(5〜1位)\"" \
+--ignore-matching-lines=".*name=\"ライブラリ設置\"" \
 --ignore-matching-lines=".*coordinates.*" \
---ignore-matching-lines ".*ランキング.*" \
 --ignore-matching-lines ".*styleUrl.*" \
 -U 0 >> out/diff
 set -e
