@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"image/color"
 	"io/ioutil"
@@ -16,6 +17,8 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	kml "github.com/twpayne/go-kml"
+
+	"googlemaps.github.io/maps"
 )
 
 // Area 1地方ごとの店舗情報データ
@@ -151,10 +154,11 @@ func main() {
 
 				// 店舗IDから位置情報取得
 				// ShopURLにアクセスしGoogleMapへのURLから緯度経度を取得する
-				// 一斉アクセスを避けるため、sleepを入れて多少マイルドになるように止める
 				time.Sleep(1 * time.Microsecond)
 				shopPage, _ := goquery.NewDocument(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID))
 				gMapURL, mapExists := shopPage.Find(".access_map").Attr("src")
+
+				// 緯度経度情報が取れた場合はそれを適用、ない場合は住所からそれっぽい場所をAPI経由で取得
 				if mapExists {
 
 					// 緯度と経度部分のみ抜き出す
@@ -165,6 +169,21 @@ func main() {
 					longLat := strings.Split(gMapURL, ",")
 					long, _ = strconv.ParseFloat(longLat[1], 64)
 					lat, _ = strconv.ParseFloat(longLat[0], 64)
+
+				} else {
+
+					client, err := maps.NewClient(maps.WithAPIKey(os.Getenv("GCLOUD_API_KEY")))
+					if err != nil {
+						log.Fatalf("fatal error: %s", err)
+					}
+					r := &maps.GeocodingRequest{
+						Address:  areas[i].Pref[j].Store[k].Add,
+						Language: "ja",
+						Region:   "jp",
+					}
+					geoLocate, _ := client.Geocode(context.Background(), r)
+					long = geoLocate[0].Geometry.Location.Lng
+					lat = geoLocate[0].Geometry.Location.Lat
 				}
 
 				// ランキングが空の場合、もしくは5位までない場合はダミーを入れる
@@ -197,16 +216,19 @@ func main() {
 				if l.Library {
 					libStyle = "#icon-1526-A52714"
 					libSign = "○"
+				} else if mapExists == false {
+					libStyle = "#icon-1594-9C27B0"
+					libSign = "？"
 				} else {
 					libStyle = "#icon-1598-0288D1"
 					libSign = "×"
 				}
 
-				// 新店舗のみ個別のアイコンに変更し、ランキング情報を変更
-				if l.Rank5th == rankNull && l.Rank1st == rankNull {
+				// 新店舗の時だけ個別のアイコンに変更し、ランキング情報を変更
+				if l.Rank5th == rankNull && l.Rank1st == rankNull && mapExists {
 					log.Warn("新店舗があるようです！: " + l.Name)
 					rankResult = "ランキングなし"
-					libStyle = "#icon-1881-0f9d58"
+					libStyle = "#icon-1881-0F9D58"
 				} else {
 					rankResult = l.Rank5th + " 〜 " + l.Rank1st
 				}
@@ -256,9 +278,19 @@ func main() {
 				),
 			),
 			kml.SharedStyle(
-				"icon-1881-0f9d58",
+				"icon-1881-0F9D58",
 				kml.IconStyle(
 					kml.Color(color.RGBA{R: 15, G: 157, B: 58, A: 0}),
+					kml.Scale(1),
+					kml.Icon(
+						kml.Href(iconImage),
+					),
+				),
+			),
+			kml.SharedStyle(
+				"icon-1594-9C27B0",
+				kml.IconStyle(
+					kml.Color(color.RGBA{R: 152, G: 51, B: 74, A: 0}),
 					kml.Scale(1),
 					kml.Icon(
 						kml.Href(iconImage),

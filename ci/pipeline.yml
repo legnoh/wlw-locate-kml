@@ -52,6 +52,7 @@ jobs:
         path: repo/ci/run.sh
       params:
         TZ: 'Asia/Tokyo'
+        GCLOUD_API_KEY: ((gcloud-api-key))
   - put: release
     params:
       name: out/name
