@@ -44,7 +44,7 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: golang
+          repository: golang:alpine
       inputs:
         - name: repo
       outputs:
