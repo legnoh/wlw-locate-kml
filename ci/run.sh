@@ -3,7 +3,7 @@
 set -e -u -x
 
 # prepare
-go get -u github.com/golang/dep/cmd/dep
+curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 JOB_DIR=$PWD
 INPUT_REPO=$JOB_DIR/repo
 GOPATH_REPO=$GOPATH/src/github.com/legnoh/wlw-locate-kml
