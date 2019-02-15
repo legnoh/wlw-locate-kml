@@ -10,4 +10,5 @@ jobs:
     steps:
       - checkout
       - run: dep ensure
+      - run: pwd
       - run: go run main.go
