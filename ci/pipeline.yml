@@ -48,7 +48,7 @@ jobs:
       inputs:
         - name: repo
       caches:
-        - path: go/src/github.com/legnoh/wlw-locate-kml/vendor
+        - path: repo/vendor
       outputs:
         - name: out
       run:
