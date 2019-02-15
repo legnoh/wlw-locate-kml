@@ -44,3 +44,5 @@ echo "# 新規出店・退店" >> out/body
 echo '```diff' >> out/body
 cat out/diff >> out/body
 echo '```' >> out/body
+
+cp -ar $GOPATH_REPO/vendor $INPUT_REPO/vendor

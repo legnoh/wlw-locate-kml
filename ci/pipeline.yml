@@ -45,9 +45,10 @@ jobs:
         type: docker-image
         source:
           repository: golang
-          tag: alpine
       inputs:
         - name: repo
+      caches:
+        - path: /go/src/github.com/legnoh/wlw-locate-kml/vendor
       outputs:
         - name: out
       run:
