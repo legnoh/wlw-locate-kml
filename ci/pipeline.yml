@@ -48,7 +48,7 @@ jobs:
       inputs:
         - name: repo
       caches:
-        - path: repo/vendor
+        - path: /go
       outputs:
         - name: out
       run:
