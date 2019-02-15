@@ -3,7 +3,6 @@
 set -e -u -x
 
 # prepare
-apk add git wget
 go get -u github.com/golang/dep/cmd/dep
 JOB_DIR=$PWD
 INPUT_REPO=$JOB_DIR/repo
