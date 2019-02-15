@@ -18,7 +18,6 @@ go run main.go
 # output
 cd $JOB_DIR
 cp $GOPATH_REPO/result-*.kml out/
-cp -ar $GOPATH_REPO/vendor $INPUT_REPO/
 
 # make release info
 date +%Y/%m/%d > out/name
