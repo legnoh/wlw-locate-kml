@@ -9,6 +9,8 @@ GOPATH_REPO=$GOPATH/src/github.com/legnoh/wlw-locate-kml
 mkdir -p $GOPATH/src/github.com/legnoh
 cp -ar $INPUT_REPO $GOPATH_REPO
 cp -ar $INPUT_REPO/mod $GOPATH/pkg/
+
+cd $GOPATH_REPO
 go mod download
 cp -ar $GOPATH/pkg/mod $INPUT_REPO/
 
