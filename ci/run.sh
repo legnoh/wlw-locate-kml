@@ -8,7 +8,6 @@ INPUT_REPO=$JOB_DIR/repo
 GOPATH_REPO=$GOPATH/src/github.com/legnoh/wlw-locate-kml
 mkdir -p $GOPATH/src/github.com/legnoh
 cp -ar $INPUT_REPO $GOPATH_REPO
-cp -ar $INPUT_REPO/mod $GOPATH/pkg/
 
 cd $GOPATH_REPO
 go mod download
@@ -20,7 +19,7 @@ go run main.go
 # output
 cd $JOB_DIR
 cp $GOPATH_REPO/result-*.kml out/
-cp -ar $GOPATH_REPO/vendor $INPUT_REPO/
+cp -ar $INPUT_REPO/mod $GOPATH/pkg/
 
 # make release info
 date +%Y/%m/%d > out/name
