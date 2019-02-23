@@ -48,14 +48,14 @@ jobs:
       inputs:
         - name: repo
       caches:
-        - path: repo/vendor
-        - path: ../../../go
+        - path: repo/mod
       outputs:
         - name: out
       run:
         path: repo/ci/run.sh
       params:
         TZ: 'Asia/Tokyo'
+        GO111MODULE: 'on'
         GCLOUD_API_KEY: ((gcloud-api-key))
   - put: release
     params:

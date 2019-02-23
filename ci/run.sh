@@ -8,8 +8,9 @@ INPUT_REPO=$JOB_DIR/repo
 GOPATH_REPO=$GOPATH/src/github.com/legnoh/wlw-locate-kml
 mkdir -p $GOPATH/src/github.com/legnoh
 cp -ar $INPUT_REPO $GOPATH_REPO
-cd $GOPATH_REPO
+cp -ar $INPUT_REPO/mod $GOPATH/pkg/
 go mod download
+cp -ar $GOPATH/pkg/mod $INPUT_REPO/
 
 # run
 go run main.go
