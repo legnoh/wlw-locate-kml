@@ -3,14 +3,13 @@
 set -e -u -x
 
 # prepare
-go get -u github.com/golang/dep/cmd/dep
 JOB_DIR=$PWD
 INPUT_REPO=$JOB_DIR/repo
 GOPATH_REPO=$GOPATH/src/github.com/legnoh/wlw-locate-kml
 mkdir -p $GOPATH/src/github.com/legnoh
 cp -ar $INPUT_REPO $GOPATH_REPO
 cd $GOPATH_REPO
-dep ensure
+go mod download
 
 # run
 go run main.go
