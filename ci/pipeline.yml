@@ -103,4 +103,4 @@ resource_types:
 - name: twitter
   type: docker-image
   source:
-    repository: ecsteam/twitter-concourse-resource
+    repository: legnoh/twitter-resource
