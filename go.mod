@@ -3,7 +3,7 @@ module github.com/legnoh/wlw-locate-kml
 require (
 	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/google/uuid v1.1.0 // indirect
-	github.com/sirupsen/logrus v1.3.0
+	github.com/sirupsen/logrus v1.4.2
 	github.com/twpayne/go-kml v1.0.0
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
