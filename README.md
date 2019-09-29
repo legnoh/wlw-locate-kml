@@ -5,15 +5,17 @@
 output WLW map's KML file.
 
 ## usage
-```sh
-$ glide install
-$ go run main.go
+
+```bash
+go run main.go
 ```
 
-### for diff...
+### for diff
+
 - 新規出店・退店店舗のみを抜き出す
+
 ```sh
-$ diff result-before.kml result-after.kml \
+diff result-before.kml result-after.kml \
 --ignore-matching-lines=".*name.*" \
 --ignore-matching-lines=".*description.*" \
 --ignore-matching-lines=".*coordinates.*" \
@@ -23,8 +25,8 @@ $ diff result-before.kml result-after.kml \
 ```
 
 ## TODO
+
 - Refactoring
 - UnitTest
-- Deploy to CF
 
 ## ENJOY :meat_on_bone::meat_on_bone::meat_on_bone:
