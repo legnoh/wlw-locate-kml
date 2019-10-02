@@ -1,10 +1,10 @@
 name: make-kml
 on:
-schedule:
-- cron:  10 0 1 * *
+  schedule:
+  - cron: 10 0 1 * *
 
 jobs:
-  release:
+  make_kml:
     name: make-kml
     runs-on: ubuntu-latest
     steps:
@@ -12,7 +12,7 @@ jobs:
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
-        version: 1.13
+        go-version: 1.13
       id: go
 
     - name: Check out code into the Go module directory
@@ -25,4 +25,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY }}
         TZ: 'Asia/Tokyo'
-      run: .github/actions/make-kml.sh
+      run: .github/workflows/make-kml.sh
