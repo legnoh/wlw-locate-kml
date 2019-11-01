@@ -6,7 +6,7 @@ require (
 	github.com/google/uuid v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/mattn/go-isatty v0.0.9 // indirect
-	github.com/onsi/ginkgo v1.10.2
+	github.com/onsi/ginkgo v1.10.3
 	github.com/onsi/gomega v1.7.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/tcnksm/ghr v0.13.0 // indirect
