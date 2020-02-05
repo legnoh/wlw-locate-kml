@@ -1,7 +1,7 @@
 module github.com/legnoh/wlw-locate-kml
 
 require (
-	github.com/PuerkitoBio/goquery v1.5.0
+	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/google/uuid v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
