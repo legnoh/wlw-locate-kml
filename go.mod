@@ -10,7 +10,7 @@ require (
 	github.com/onsi/gomega v1.9.0
 	github.com/sirupsen/logrus v1.5.0
 	github.com/tcnksm/ghr v0.13.0 // indirect
-	github.com/twpayne/go-kml v1.4.0
+	github.com/twpayne/go-kml v1.5.0
 	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
