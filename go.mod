@@ -8,7 +8,7 @@ require (
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/onsi/ginkgo v1.12.0
 	github.com/onsi/gomega v1.10.0
-	github.com/sirupsen/logrus v1.5.0
+	github.com/sirupsen/logrus v1.6.0
 	github.com/tcnksm/ghr v0.13.0 // indirect
 	github.com/twpayne/go-kml v1.5.0
 	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17 // indirect
