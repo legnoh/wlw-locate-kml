@@ -1,8 +1,5 @@
 name: make-kml
 on:
-  push:
-    branches:
-      - master
   schedule:
   - cron: 10 0 1 * *
 
