@@ -6,7 +6,7 @@ require (
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/onsi/ginkgo v1.14.0
 	github.com/onsi/gomega v1.10.1
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.7.0
 	github.com/tcnksm/ghr v0.13.0 // indirect
 	github.com/twpayne/go-kml v1.5.1
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
