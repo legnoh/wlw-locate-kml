@@ -5,7 +5,7 @@ require (
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/onsi/ginkgo v1.16.1
-	github.com/onsi/gomega v1.10.5
+	github.com/onsi/gomega v1.11.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/tcnksm/ghr v0.13.0 // indirect
 	github.com/twpayne/go-kml v1.5.2
