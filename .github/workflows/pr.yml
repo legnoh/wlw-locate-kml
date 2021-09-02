@@ -1,0 +1,29 @@
+name: Check make-kml is successful
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  make_kml:
+    name: make-kml
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v2.1.3
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@master
+
+    - name: make-kml
+      env:
+        GO111MODULE: on
+        GOPATH: /home/runner/work/
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY }}
+        TZ: 'Asia/Tokyo'
+      run: go run main.go
