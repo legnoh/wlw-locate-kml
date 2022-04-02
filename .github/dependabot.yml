@@ -3,14 +3,10 @@ updates:
 - package-ecosystem: gomod
   directory: "/"
   schedule:
-    interval: monthly
-    day: sunday
-    time: "19:00"
-    timezone: Asia/Tokyo
+    interval: daily
+    time: "04:00" # 13:00(UTC+9)
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: monthly
-    day: sunday
-    time: "19:00"
-    timezone: Asia/Tokyo
+    interval: daily
+    time: "04:00" # 13:00(UTC+9)
