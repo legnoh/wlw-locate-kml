@@ -2,7 +2,7 @@ name: Check make-kml is successful
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   make_kml:
