@@ -45,6 +45,7 @@ jobs:
       run: .github/workflows/make-kml.sh
 
     - name: Release
+      uses: softprops/action-gh-release@v1
       with:
         body_path: ${{ env.RELEASE_NEW_DRAFT }}
         files: ${{ env.RELEASE_NEW_ASSET_FILE }}
