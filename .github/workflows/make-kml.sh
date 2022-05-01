@@ -38,7 +38,7 @@ diff ${RELEASE_LATEST_ASSET_FILE} ${RELEASE_NEW_ASSET_FILE} \
 EOS
 
 # post new github prerelease
-$GOPATH/bin/ghr \
+${GOPATH}bin/ghr \
 -n ${RELEASE_NEW_NAME} \
 -b "$(cat ${RELEASE_NEW_DRAFT})" \
 -prerelease ${RELEASE_NEW_TAG} \
