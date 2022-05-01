@@ -6,11 +6,10 @@ set -x
 RELEASES_LATEST_URL=https://api.github.com/repos/legnoh/wlw-locate-kml/releases/latest
 RELEASE_LATEST_ASSET_URL=$(curl -s ${RELEASES_LATEST_URL} | jq -r '.assets[].browser_download_url')
 RELEASE_LATEST_ASSET_FILE=$(echo ${RELEASE_LATEST_ASSET_URL} | awk -F "/" '{ print $NF }')
-RELEASE_NEW_NAME=$(date +%Y/%m/%d)
-RELEASE_NEW_TAG=$(date +%Y%m%d)
-RELEASE_NEW_ASSET_FILE=result-${RELEASE_NEW_TAG}.kml
-RELEASE_NEW_DRAFT=draft-${RELEASE_NEW_TAG}.md
-go get -u github.com/tcnksm/ghr
+RELEASE_NEW_NAME=${RELEASE_NEW_NAME:?}
+RELEASE_NEW_TAG=${RELEASE_NEW_TAG:?}
+RELEASE_NEW_ASSET_FILE=${RELEASE_NEW_ASSET_FILE:?}
+RELEASE_NEW_DRAFT=${RELEASE_NEW_DRAFT:?}
 
 # get previous release
 curl -sL ${RELEASE_LATEST_ASSET_URL} -o ${RELEASE_LATEST_ASSET_FILE}
@@ -36,10 +35,3 @@ diff ${RELEASE_LATEST_ASSET_FILE} ${RELEASE_NEW_ASSET_FILE} \
 ```
 \`\`\`
 EOS
-
-# post new github prerelease
-${GOPATH}bin/ghr \
--n ${RELEASE_NEW_NAME} \
--b "$(cat ${RELEASE_NEW_DRAFT})" \
--prerelease ${RELEASE_NEW_TAG} \
-${RELEASE_NEW_ASSET_FILE}
