@@ -3,7 +3,7 @@ module github.com/legnoh/wlw-locate-kml
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.20.0
+	github.com/onsi/gomega v1.20.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/twpayne/go-kml v1.5.2
 	golang.org/x/text v0.3.7
