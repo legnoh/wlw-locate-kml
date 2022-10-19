@@ -6,7 +6,7 @@ require (
 	github.com/onsi/gomega v1.22.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/twpayne/go-kml v1.5.2
-	golang.org/x/text v0.3.8
+	golang.org/x/text v0.4.0
 	googlemaps.github.io/maps v1.3.2
 )
 
