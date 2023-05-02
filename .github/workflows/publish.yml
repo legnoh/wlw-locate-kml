@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: update
-        uses: ethomson/send-tweet-action@v1
+        uses: dart-actions/tweet@v1.0.1
         with:
           consumer-key: ${{ secrets.TWITTER_CONSUMER_KEY }}
           consumer-secret: ${{ secrets.TWITTER_CONSUMER_SECRET }}
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           access-token-secret: ${{ secrets.TWITTER_ACCESS_SECRET }}
-          status: |
+          text: |
             ワンダーMAPを更新しました。変更点はdiffを確認ください。 #sega_wlw
             https://github.com/legnoh/wlw-locate-kml/releases
             https://www.google.com/maps/d/viewer?hl=ja&mid=1ENDxk6QqlKlyjqS4iB_1HNyD7UM
