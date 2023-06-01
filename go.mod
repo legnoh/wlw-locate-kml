@@ -5,7 +5,7 @@ require (
 	github.com/sirupsen/logrus v1.9.2
 	github.com/twpayne/go-kml v1.5.2
 	golang.org/x/text v0.9.0
-	googlemaps.github.io/maps v1.4.0
+	googlemaps.github.io/maps v1.5.0
 )
 
 require (
