@@ -24,7 +24,5 @@ jobs:
       env:
         GO111MODULE: on
         GOPATH: /home/runner/work/
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY }}
         TZ: 'Asia/Tokyo'
       run: go run main.go
