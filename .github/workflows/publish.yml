@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: update
-        uses: dart-actions/tweet@v1.0.1
+        uses: noweh/post-tweet-v2-action@v1.0
         with:
           consumer-key: ${{ secrets.TWITTER_CONSUMER_KEY }}
           consumer-secret: ${{ secrets.TWITTER_CONSUMER_SECRET }}
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          access-token-secret: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          bearer-token: ${{ secrets.TWITTER_BEARER_TOKEN }}
           text: |
             ワンダーMAPを更新しました。変更点はdiffを確認ください。 #sega_wlw
             https://github.com/legnoh/wlw-locate-kml/releases
