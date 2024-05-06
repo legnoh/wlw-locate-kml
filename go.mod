@@ -4,7 +4,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.9.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/twpayne/go-kml v1.5.2
-	golang.org/x/text v0.14.0
+	golang.org/x/text v0.15.0
 	googlemaps.github.io/maps v1.7.0
 )
 
