@@ -4,6 +4,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.9.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/twpayne/go-kml v1.5.2
+	github.com/twpayne/go-kml/v3 v3.3.0
 	golang.org/x/text v0.21.0
 	googlemaps.github.io/maps v1.7.0
 )
@@ -19,4 +20,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-go 1.18
+go 1.22
+
+toolchain go1.23.5
