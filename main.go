@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"image/color"
 	"io"
 	"net/http"
@@ -102,6 +103,26 @@ func init() {
 	log.SetOutput(os.Stdout)
 }
 
+func getShopData(url string) io.Reader {
+
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", url, nil)
+	parseFormErr := req.ParseForm()
+	if parseFormErr != nil {
+		fmt.Println(parseFormErr)
+	}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		log.Warn("request Failure : ", err)
+	}
+	if resp.StatusCode != 200 {
+		log.Warn("request Failure with error code: ", resp.StatusCode)
+		return nil
+	}
+	return resp.Body
+}
+
 func main() {
 
 	// 4〜7時はメンテナンス中なので実行しない
@@ -163,7 +184,11 @@ func main() {
 				// 店舗IDから位置情報取得
 				// ShopURLにアクセスしGoogleMapへのURLから緯度経度を取得する
 				time.Sleep(1 * time.Microsecond)
-				shopPage, _ := goquery.NewDocument(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID))
+				shopData := getShopData(shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID))
+				shopPage, err := goquery.NewDocumentFromReader(shopData)
+				if err != nil {
+					log.Error("shopPage can't be parsed!: ", strconv.Itoa(areas[i].Pref[j].Store[k].ID))
+				}
 				gMapURL, mapExists := shopPage.Find(".access_map").Attr("src")
 
 				// 緯度経度情報が取れた場合はそれを適用、ない場合は住所からそれっぽい場所をAPI経由で取得
