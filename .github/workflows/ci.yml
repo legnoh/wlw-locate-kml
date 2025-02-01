@@ -45,6 +45,8 @@ jobs:
         curl -LO ${latest_asset_url}
         echo "latest_file=$(gh api "repos/${{ github.repository }}/releases/latest" \
           --jq '.assets[0].browser_download_url')" >> $GITHUB_OUTPUT
+      env:
+        GH_TOKEN: ${{ github.token }}
 
     - name: Make Release draft
       if: github.event_name != 'pull_request_target'
