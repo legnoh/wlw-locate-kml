@@ -31,7 +31,7 @@ jobs:
       run: |
         echo "release_new_name=$(date +%Y/%m/%d)" >> $GITHUB_OUTPUT
         echo "release_new_tag=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
-        echo "release_new_asset_file=result-$(date +%Y/%m/%d).kml" >> $GITHUB_OUTPUT
+        echo "release_new_asset_file=result-$(date +%Y%m%d).kml" >> $GITHUB_OUTPUT
         echo "release_new_draft=draft-$(date +%Y%m%d).md" >> $GITHUB_OUTPUT
       env:
         TZ: 'Asia/Tokyo'
@@ -44,7 +44,7 @@ jobs:
           --jq '.assets[0].browser_download_url')
         curl -LO ${latest_asset_url}
         echo "latest_file=$(gh api "repos/${{ github.repository }}/releases/latest" \
-          --jq '.assets[0].browser_download_url')" >> $GITHUB_OUTPUT
+          --jq '.assets[0].name')" >> $GITHUB_OUTPUT
       env:
         GH_TOKEN: ${{ github.token }}
 
