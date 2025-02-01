@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"image/color"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"regexp"
@@ -16,7 +16,7 @@ import (
 	"golang.org/x/text/unicode/norm"
 
 	"github.com/PuerkitoBio/goquery"
-	kml "github.com/twpayne/go-kml"
+	"github.com/twpayne/go-kml/v3"
 
 	"googlemaps.github.io/maps"
 )
@@ -112,14 +112,18 @@ func main() {
 	}
 
 	// 店舗情報一覧を取得して構造体に分解
-	resp, _ := http.Get(locationURL)
+	resp, err := http.Get(locationURL)
+	if err != nil {
+		log.Error("failed to fetch location infomation...stopped")
+		os.Exit(1)
+	}
 	defer resp.Body.Close()
-	jsonBlob, _ := ioutil.ReadAll(resp.Body)
+	jsonBlob, _ := io.ReadAll(resp.Body)
 	var areas []Area
 	json.Unmarshal(jsonBlob, &areas)
 
 	// ストア情報を保持する配列を定義
-	locations := make(map[int]*kml.CompoundElement)
+	locations := make(map[int]*kml.FolderElement)
 
 	// すべてのAreaに対して以下の処理を行う
 	for i := 0; i < len(areas); i++ {
@@ -129,9 +133,13 @@ func main() {
 		locations[i] = kml.Folder(kml.Name(areas[i].Name))
 
 		// ランキング情報を取得する
-		resp, _ := http.Get(scoreRankingURL + strconv.Itoa(i) + ".json")
+		resp, err := http.Get(scoreRankingURL + strconv.Itoa(i) + ".json")
+		if err != nil {
+			log.Warn("failed to fetch scoreRanking...skipped")
+			continue
+		}
 		defer resp.Body.Close()
-		jsonBlob, _ := ioutil.ReadAll(resp.Body)
+		jsonBlob, _ := io.ReadAll(resp.Body)
 		var storeScoresData []StoreScore
 		json.Unmarshal(jsonBlob, &storeScoresData)
 
@@ -202,7 +210,6 @@ func main() {
 				l := Location{
 					Name:       string(norm.NFKC.Bytes([]byte(areas[i].Pref[j].Store[k].Name))),
 					Address:    string(norm.NFKC.Bytes([]byte(areas[i].Pref[j].Store[k].Add))),
-					Area:       i,
 					Lat:        lat,
 					Long:       long,
 					ShopURL:    shopURL + strconv.Itoa(areas[i].Pref[j].Store[k].ID),
@@ -216,7 +223,7 @@ func main() {
 				if l.Library {
 					libStyle = "#icon-1526-A52714"
 					libSign = "○"
-				} else if mapExists == false {
+				} else if !mapExists {
 					libStyle = "#icon-1594-9C27B0"
 					libSign = "？"
 				} else {
@@ -301,7 +308,6 @@ func main() {
 				kml.Scale(1),
 			),
 			kml.Schema(
-				"extendInfomation",
 				"extendInfomation",
 				kml.SimpleField("ライブラリ設置", "string"),
 				kml.SimpleField("住所", "string"),

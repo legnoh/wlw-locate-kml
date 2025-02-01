@@ -1,4 +1,4 @@
-name: tweet
+name: Post to X
 on:
   workflow_dispatch:
   release:

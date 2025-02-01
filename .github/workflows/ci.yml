@@ -1,0 +1,51 @@
+name: CI
+on:
+  pull_request_target:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+  - cron: 10 0 1 * *
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: stable
+        check-latest: true
+
+    - name: Prepare envs
+      id: env
+      run: |
+        echo "release_new_name=$(date +%Y/%m/%d)" >> $GITHUB_OUTPUT
+        echo "release_new_tag=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+        echo "release_new_asset_file=result-${RELEASE_NEW_TAG}.kml" >> $GITHUB_OUTPUT
+        echo "release_new_draft=draft-${RELEASE_NEW_TAG}.md" >> $GITHUB_OUTPUT
+
+    - name: Generate KML
+      env:
+        GO111MODULE: on
+        GOPATH: /home/runner/work/
+        GITHUB_TOKEN: ${{ github.token }}
+        GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY }}
+        RELEASE_NEW_NAME: ${{ steps.env.outputs.release_new_name }}
+        RELEASE_NEW_TAG: ${{ steps.env.outputs.release_new_tag }}
+        RELEASE_NEW_ASSET_FILE: ${{ steps.env.outputs.release_new_asset_file }}
+        RELEASE_NEW_DRAFT: ${{ steps.env.outputs.release_new_draft }}
+        TZ: 'Asia/Tokyo'
+      run: .github/workflows/make-kml.sh
+
+    - name: Create GitHub Release(pre)
+      if: github.event_name != 'pull_request_target'
+      uses: softprops/action-gh-release@v2
+      with:
+        body_path: ${{ steps.env.outputs.release_new_draft }}
+        files: ${{ steps.env.outputs.release_new_asset_file }}
+        name: ${{ steps.env.outputs.release_new_name }}
+        prerelease: true
+        tag_name: ${{ steps.env.outputs.release_new_tag }}
