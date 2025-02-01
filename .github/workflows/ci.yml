@@ -51,6 +51,7 @@ jobs:
     - name: Make Release draft
       if: github.event_name != 'pull_request_target'
       run: |
+        set +e
         diff_file=$(diff ${{ steps.prev.outputs.latest_file }} ${{ steps.env.outputs.release_new_asset_file }} \
         --ignore-matching-lines=".*description.*" \
         --ignore-matching-lines=".*name=\"住所\".*" \
@@ -60,6 +61,7 @@ jobs:
         --ignore-matching-lines=".*coordinates.*" \
         --ignore-matching-lines=".*styleUrl.*" \
         -U 0)
+        set -e
 
         cat << EOS > ${{ steps.env.outputs.release_new_draft }}
         # 新規出店・退店
