@@ -18,27 +18,54 @@ jobs:
       with:
         go-version: stable
         check-latest: true
+    
+    - name: Generate KML
+      run: go run main.go
+      env:
+        GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY }}
+        TZ: 'Asia/Tokyo'
 
     - name: Prepare envs
+      if: github.event_name != 'pull_request_target'
       id: env
       run: |
         echo "release_new_name=$(date +%Y/%m/%d)" >> $GITHUB_OUTPUT
         echo "release_new_tag=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
-        echo "release_new_asset_file=result-${RELEASE_NEW_TAG}.kml" >> $GITHUB_OUTPUT
-        echo "release_new_draft=draft-${RELEASE_NEW_TAG}.md" >> $GITHUB_OUTPUT
-
-    - name: Generate KML
+        echo "release_new_asset_file=result-$(date +%Y/%m/%d).kml" >> $GITHUB_OUTPUT
+        echo "release_new_draft=draft-$(date +%Y%m%d).md" >> $GITHUB_OUTPUT
       env:
-        GO111MODULE: on
-        GOPATH: /home/runner/work/
-        GITHUB_TOKEN: ${{ github.token }}
-        GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY }}
-        RELEASE_NEW_NAME: ${{ steps.env.outputs.release_new_name }}
-        RELEASE_NEW_TAG: ${{ steps.env.outputs.release_new_tag }}
-        RELEASE_NEW_ASSET_FILE: ${{ steps.env.outputs.release_new_asset_file }}
-        RELEASE_NEW_DRAFT: ${{ steps.env.outputs.release_new_draft }}
         TZ: 'Asia/Tokyo'
-      run: .github/workflows/make-kml.sh
+
+    - name: Fetch previous Release KML
+      if: github.event_name != 'pull_request_target'
+      id: prev
+      run: |
+        latest_asset_url=$(gh api "repos/${{ github.repository }}/releases/latest" \
+          --jq '.assets[0].browser_download_url')
+        curl -LO ${latest_asset_url}
+        echo "latest_file=$(gh api "repos/${{ github.repository }}/releases/latest" \
+          --jq '.assets[0].browser_download_url')" >> $GITHUB_OUTPUT
+
+    - name: Make Release draft
+      if: github.event_name != 'pull_request_target'
+      run: |
+        diff_file=$(diff ${{ steps.prev.outputs.latest_file }} ${{ steps.env.outputs.release_new_asset_file }} \
+        --ignore-matching-lines=".*description.*" \
+        --ignore-matching-lines=".*name=\"住所\".*" \
+        --ignore-matching-lines=".*name=\"ランキング\"" \
+        --ignore-matching-lines=".*name=\"ランキング結果(5〜1位)\"" \
+        --ignore-matching-lines=".*name=\"ライブラリ設置\"" \
+        --ignore-matching-lines=".*coordinates.*" \
+        --ignore-matching-lines=".*styleUrl.*" \
+        -U 0)
+
+        cat << EOS > ${{ steps.env.outputs.release_new_draft }}
+        # 新規出店・退店
+
+        \`\`\`diff
+        ${diff_file}
+        \`\`\`
+        EOS
 
     - name: Create GitHub Release(pre)
       if: github.event_name != 'pull_request_target'
