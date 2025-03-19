@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -19,6 +21,9 @@ jobs:
         go-version: stable
         check-latest: true
     
+    - name: Download dependencies
+      run: go mod download
+
     - name: Generate KML
       run: go run main.go
       env:
