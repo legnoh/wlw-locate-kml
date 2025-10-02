@@ -1,6 +1,6 @@
 name: CI
 on:
-  pull_request_target:
+  pull_request:
     branches: [main]
   workflow_dispatch:
   schedule:
@@ -14,8 +14,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
-      with:
-        ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
     - name: Set up Go
       uses: actions/setup-go@v6
@@ -29,11 +27,11 @@ jobs:
     - name: Generate KML
       run: go run main.go
       env:
-        GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY }}
+        GCLOUD_API_KEY: ${{ secrets.GCLOUD_API_KEY || 'DUMMY' }}
         TZ: 'Asia/Tokyo'
 
     - name: Prepare envs
-      if: github.event_name != 'pull_request_target'
+      if: github.event_name != 'pull_request'
       id: env
       run: |
         echo "release_new_name=$(date +%Y/%m/%d)" >> $GITHUB_OUTPUT
@@ -44,7 +42,7 @@ jobs:
         TZ: 'Asia/Tokyo'
 
     - name: Fetch previous Release KML
-      if: github.event_name != 'pull_request_target'
+      if: github.event_name != 'pull_request'
       id: prev
       run: |
         latest_asset_url=$(gh api "repos/${{ github.repository }}/releases/latest" \
@@ -56,7 +54,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
 
     - name: Make Release draft
-      if: github.event_name != 'pull_request_target'
+      if: github.event_name != 'pull_request'
       run: |
         set +e
         diff_file=$(diff ${{ steps.prev.outputs.latest_file }} ${{ steps.env.outputs.release_new_asset_file }} \
@@ -79,7 +77,7 @@ jobs:
         EOS
 
     - name: Create GitHub Release(pre)
-      if: github.event_name != 'pull_request_target'
+      if: github.event_name != 'pull_request'
       uses: softprops/action-gh-release@v2
       with:
         body_path: ${{ steps.env.outputs.release_new_draft }}
