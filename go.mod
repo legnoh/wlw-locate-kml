@@ -4,7 +4,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/twpayne/go-kml/v3 v3.6.0
-	golang.org/x/text v0.34.0
+	golang.org/x/text v0.35.0
 	googlemaps.github.io/maps v1.7.0
 )
 
@@ -17,4 +17,4 @@ require (
 	golang.org/x/time v0.9.0 // indirect
 )
 
-go 1.24.1
+go 1.25.0
