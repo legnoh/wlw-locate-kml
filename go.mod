@@ -12,8 +12,8 @@ require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.52.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
 )
 
