@@ -17,4 +17,4 @@ require (
 	golang.org/x/time v0.9.0 // indirect
 )
 
-go 1.26.5
+go 1.26.6
